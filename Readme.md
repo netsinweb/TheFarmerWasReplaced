@@ -43,3 +43,6 @@
   - get_ground_type()
   - None
   - num_unlocked(unlock)
+- debug
+  - print()
+  - quick_print()
