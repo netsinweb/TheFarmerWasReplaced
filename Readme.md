@@ -18,3 +18,9 @@
   - if
   - can_harvest()
 - Grass:Lv1 100% > 200%
+- Expand:Lv1 1x1 > 3x1
+  - move()
+  - North
+  - East
+  - South
+  - West
