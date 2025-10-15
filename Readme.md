@@ -31,3 +31,6 @@
   - +, -, *, /, //(切り捨て), %, **
   - ==, !=, <=, >=, <, >
   - not, and, or
+- expand: Lv2 3x1 > 2x3
+  - for
+  - get_world_size()
