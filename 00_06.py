@@ -4,13 +4,13 @@ clear()
 do_a_flip()
 change_hat(Hats.Brown_Hat)
 while True:
-    plant(Entities.Bush)
-    if can_harvest():
-        harvest()
-    move(North)
-    if can_harvest():
-        harvest()
-    move(North)
-    if can_harvest():
-        harvest()
-    move(North)
+	plant(Entities.Bush)
+	if can_harvest():
+		harvest()
+	move(North)
+	if can_harvest():
+		harvest()
+	move(North)
+	if can_harvest():
+		harvest()
+	move(North)
