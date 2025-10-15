@@ -27,3 +27,7 @@
 - plant
   - plant()
   - clear()
+- operator
+  - +, -, *, /, //(切り捨て), %, **
+  - ==, !=, <=, >=, <, >
+  - not, and, or
