@@ -34,3 +34,12 @@
 - expand: Lv2 3x1 > 2x3
   - for
   - get_world_size()
+- speed update:Lv2 150% > 225%
+- sence
+  - get_pos_x()
+  - get_pos_y()
+  - num_items(item)
+  - get_entity_type()
+  - get_ground_type()
+  - None
+  - num_unlocked(unlock)
