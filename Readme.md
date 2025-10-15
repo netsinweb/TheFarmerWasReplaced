@@ -50,3 +50,8 @@
 - carrot
   - Entities.Carrot
   - till()
+- valiable
+  - +=, -=. *=, /=, %=
+- wartering
+  - get_water()
+  - use_item()
