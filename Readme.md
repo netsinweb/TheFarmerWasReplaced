@@ -58,3 +58,5 @@
 - function
   - pass
   - return
+- expand:Lv3 3x3 > 4x4
+- speed update:Lv3 225% > 337.5%
