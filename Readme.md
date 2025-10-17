@@ -55,3 +55,6 @@
 - wartering
   - get_water()
   - use_item()
+- function
+  - pass
+  - return
