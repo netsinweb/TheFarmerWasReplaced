@@ -47,12 +47,12 @@
   - print()
   - quick_print()
 - grass:Lv2 200% > 400%
-- carrot
+- carrot:Lv1
   - Entities.Carrot
   - till()
 - valiable
   - +=, -=. *=, /=, %=
-- wartering
+- wartering:Lv1
   - get_water()
   - use_item()
 - function
@@ -64,4 +64,20 @@
   - import
   - from
 - expand:Lv4 4x4 > 6x6
-- tree
+- tree:Lv1
+- tree:Lv2 100% > 200%
+- tree:Lv3 200% > 400%
+- wartering:Lv2 0.1/s > 0.2/s
+- fertilizer:Lv1
+- carrot:Lv2 100% > 200%
+- wartering:Lv3 0.2/s > 0.4/s
+- speed update:Lv4 337.5% > 506.25%
+- list
+  - append
+  - remove
+  - insert
+  - pop
+  - len
+- speed update:Lv5 506.25% > 759.375%
+- punpkin:Lv1
+- tree:Lv4 400% > 800%
