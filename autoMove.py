@@ -1,4 +1,5 @@
-def pointMove(toX = 0, toY = 0):
+def pointMove(toPointList = [0, 0]):
+	toX, toY = toPointList
 	x = get_pos_x()
 	y = get_pos_y()
 	directionX = East
@@ -13,7 +14,9 @@ def pointMove(toX = 0, toY = 0):
 	while get_pos_y() != toY:
 		move(directionY)
 
-def snakeMove(sizeX, sizeY, minX = 0, minY = 0):
+def snakeMove(sizeList, minPointList = [0, 0]):
+	sizeX, sizeY = sizeList
+	minX, minY = minPointList
 	maxX = sizeX - 1
 	maxY = sizeY - 1
 	x = get_pos_x()
@@ -38,7 +41,9 @@ def snakeMove(sizeX, sizeY, minX = 0, minY = 0):
 	move(North)
 	return True
 
-def loopSnake(sizeX, sizeY, minX = 0, minY = 0):
+def loopSnake(sizeList, minPointList = [0, 0]):
+	sizeX, sizeY = sizeList
+	minX, minY = minPointList
 	if sizeX < 2 or sizeY < 2:
 		print("Size too small! (2 or more)")
 		change_hat(Hats.Purple_Hat)
