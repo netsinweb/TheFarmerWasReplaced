@@ -1,8 +1,17 @@
 import autoPlant
 
+def itemLog(message):
+	quick_print("")
+	quick_print(message)
+	quick_print("The number of items")
+	quick_print("  - hay    :", num_items(Items.Hay))
+	quick_print("  - wood   :", num_items(Items.Wood))
+	quick_print("  - carrot :", num_items(Items.Carrot))
+	quick_print("  - punpkin:", num_items(Items.Pumpkin))
+
 def compLog():
 	quick_print("")
-	quick_print("## autoPlant Log")
+	quick_print("## complete Log")
 	quick_print("Target Number")
 	quick_print("  - hay    :", autoPlant.hayTargetNumber)
 	quick_print("  - wood   :", autoPlant.woodTargetNumber)
@@ -24,3 +33,12 @@ def compLog():
 	quick_print("  - wood   :", autoPlant.woodHarvestNumber)
 	quick_print("  - carrot :", autoPlant.carrotHarvestNumber)
 	quick_print("  - punpkin:", autoPlant.punpkinHarvestNumber)
+	quick_print("----")
+	quick_print("Harvest Rate")
+	quick_print("  - hay    :", autoPlant.hayHarvestRate)
+	quick_print("  - wood   :", autoPlant.woodHarvestRate)
+	quick_print("  - carrot :", autoPlant.carrotHarvestRate)
+	quick_print("  - punpkin:", autoPlant.punpkinHarvestRate)
+	quick_print("Entity Level")
+	quick_print("  - carrot :", autoPlant.carrotLevel)
+	quick_print("  - punpkin:", autoPlant.punpkinLevel)
