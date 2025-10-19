@@ -11,82 +11,82 @@
 hayTargetNumber = 0
 woodTargetNumber = 0
 carrotTargetNumber = 0
-punpkinTargetNumber = 0
+pumpkinTargetNumber = 0
 
 hayHarvestRate = 1
 woodHarvestRate = 1
 carrotHarvestRate = 1
-punpkinHarvestRate = 1
+pumpkinHarvestRate = 1
 
 carrotLevel = 1
-punpkinLevel = 1
+pumpkinLevel = 1
 
 # 収穫単位(土地1ブロックあたりの収穫数)
 hayHarvestUnit = 1
 woodHarvestFromBushUnit = 1
 woodHarvestFromTreeUnit = 5
 carrotHarvestUnit = 1
-punpkinHarvestUnit = 1
+pumpkinHarvestUnit = 1
 
 hayNeedsNumber = 0
 woodNeedsNumber = 0
 carrotNeedsNumber = 0
-punpkinNeedsNumber = 0
+pumpkinNeedsNumber = 0
 
 grassPlantedNumber = 0
 bushPlantedNumber = 0
 treePlantedNumber = 0
 carrotPlantedNumber = 0
-punpkinPlantedNumber = 0
+pumpkinPlantedNumber = 0
 
 # 収穫量 ~~(予定値:人参などは収穫単位がランダムのため実測値ではない)~~
 hayHarvestNumber = 0
 woodHarvestNumber = 0
 carrotHarvestNumber = 0
-punpkinHarvestNumber = 0
+pumpkinHarvestNumber = 0
 
 hayComp = False
 woodComp = False
 carrotComp = False
-punpkinComp = False
+pumpkinComp = False
 
 def setTaregetNumber(numList):
 	global hayTargetNumber
 	global woodTargetNumber
 	global carrotTargetNumber
-	global punpkinTargetNumber
+	global pumpkinTargetNumber
 	(
 		hayTargetNumber,
 		woodTargetNumber,
 		carrotTargetNumber,
-		punpkinTargetNumber
+		pumpkinTargetNumber
 	) = numList
 
 def setHarvestRate(numList):
 	global hayHarvestRate
 	global woodHarvestRate
 	global carrotHarvestRate
-	global punpkinHarvestRate
+	global pumpkinHarvestRate
 	(
 		hayHarvestRate,
 		woodHarvestRate,
 		carrotHarvestRate,
-		punpkinHarvestRate
+		pumpkinHarvestRate
 	) = numList
 
 def setEntityLevel(numList):
 	global carrotLevel
-	global punpkinLevel
+	global pumpkinLevel
 	(
 		carrotLevel,
-		punpkinLevel
+		pumpkinLevel
 	) = numList
 
 # get_costが解放されればいらなくなるね
 # いや、やっぱり残りそうかな...
 def calcCost():
 	global carrotNeedsNumber
-	carrotNeedsNumber = (punpkinTargetNumber - num_items(Items.Pumpkin)) / punpkinHarvestRate * punpkinLevel
+	carrotNeedsNumber = (pumpkinTargetNumber - num_items(Items.Pumpkin)) / pumpkinHarvestRate * pumpkinLevel
 	global hayNeedsNumber
 	hayNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
 	global woodNeedsNumber
@@ -113,6 +113,9 @@ def getWoodHarvestFromTreeBasic():
 def getCarrotHarvestBasic():
 	return carrotHarvestUnit * carrotHarvestRate
 
+def getPumpkinHarvestBasic():
+	return pumpkinHarvestUnit * pumpkinHarvestRate
+
 def getHayExpectationNum():
 	return num_items(Items.Hay) + (grassPlantedNumber * getHayHarvestBasic())
 
@@ -122,8 +125,8 @@ def getWoodExpectationNum():
 def getCarrotExpectationNum():
 	return num_items(Items.Carrot) + (carrotPlantedNumber * getCarrotHarvestBasic())
 
-def getPunpkinExpectationNum():
-	return num_items(Items.Pumpkin)
+def getPumpkinExpectationNum():
+	return num_items(Items.Pumpkin) + (pumpkinPlantedNumber * getPumpkinHarvestBasic())
 
 def isHayComp():
 	return num_items(Items.Hay) >= (hayTargetNumber + hayNeedsNumber) or hayComp
@@ -133,6 +136,9 @@ def isWoodComp():
 
 def isCarrotComp():
 	return num_items(Items.Carrot) >= (carrotTargetNumber + carrotNeedsNumber) or carrotComp
+
+def isPumpkinComp():
+	return num_items(Items.Pumpkin) >= (pumpkinTargetNumber + pumpkinNeedsNumber) or pumpkinComp
 
 def action(target=""):
 	def getTargetPlant(target=""):
@@ -166,6 +172,15 @@ def action(target=""):
 			quick_print("carrotNeedsNumber:", carrotNeedsNumber)
 			change_hat(Hats.Carrot_Hat)
 			return "Carrot"
+		if getPumpkinExpectationNum() < (pumpkinTargetNumber + pumpkinNeedsNumber) and not pumpkinComp:
+			quick_print("")
+			quick_print("getTargetPlant: Pumpkin")
+			quick_print("items:",num_items(Items.Pumpkin))
+			quick_print("pumpkinPlantedNumber:", pumpkinPlantedNumber)
+			quick_print("pumpkinTargetNumber:", pumpkinTargetNumber)
+			quick_print("pumpkinNeedsNumber:", pumpkinNeedsNumber)
+			change_hat(Hats.Brown_Hat)
+			return "Pumpkin"
 		quick_print("")
 		quick_print("hayComp:",hayComp)
 		quick_print("woodComp:",woodComp)
@@ -175,13 +190,13 @@ def action(target=""):
 
 	def planTreeOrBush():
 		if get_pos_y()%2 == (1 - 1 * get_pos_x()%2):
-			plant(Entities.Tree)
-			global treePlantedNumber
-			treePlantedNumber += 1
+			if plant(Entities.Tree):
+				global treePlantedNumber
+				treePlantedNumber += 1
 			return
-		plant(Entities.Bush)
-		global bushPlantedNumber
-		bushPlantedNumber += 1
+		if plant(Entities.Bush):
+			global bushPlantedNumber
+			bushPlantedNumber += 1
 		return
 
 	if can_harvest():
@@ -207,18 +222,21 @@ def action(target=""):
 			woodHarvestNumber += getWoodHarvestFromTreeBasic()
 			global woodComp
 			woodComp = isWoodComp()
-
-		oldCarrotNum = num_items(Items.Carrot)
 		if not carrotComp and entityType == Entities.Carrot and harvest():
-			newCarrotNum = num_items(Items.Carrot)
-			quick_print("Carrot harvest value:", newCarrotNum - oldCarrotNum)
 			global carrotPlantedNumber
 			carrotPlantedNumber -= 1
 			global carrotHarvestNumber
 			carrotHarvestNumber += getCarrotHarvestBasic()
 			global carrotComp
 			carrotComp = isCarrotComp()
-
+		if not pumpkinComp and entityType == Entities.Pumpkin and harvest():
+			global pumpkinPlantedNumber
+			pumpkinPlantedNumber -= 1
+			global pumpkinHarvestNumber
+			pumpkinHarvestNumber += getPumpkinHarvestBasic()
+			global pumpkinComp
+			pumpkinComp = isPumpkinComp()
+			
 	targetPlant = getTargetPlant(target)
 	if targetPlant == "Wood":
 		planTreeOrBush()
@@ -227,13 +245,23 @@ def action(target=""):
 	if targetPlant == "Carrot":
 		if get_ground_type() != Grounds.Soil:
 			till()
-		plant(Entities.Carrot)
-		global carrotPlantedNumber
-		carrotPlantedNumber += 1
+		if plant(Entities.Carrot):
+			global carrotPlantedNumber
+			carrotPlantedNumber += 1
 		if get_water() == 0:
 			use_item(Items.Water)
 		return
 
+	if targetPlant == "Pumpkin":
+		if get_ground_type() != Grounds.Soil:
+			till()
+		if plant(Entities.Pumpkin):
+			global pumpkinPlantedNumber
+			pumpkinPlantedNumber += 1
+		if get_water() == 0:
+			use_item(Items.Water)
+		return
+		
 	if get_ground_type() == Grounds.Grassland:
 		global grassPlantedNumber
 		grassPlantedNumber += 1
