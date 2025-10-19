@@ -1,6 +1,7 @@
+import config
 import autoPlant
 
-def itemLog(message):
+def itemLog(message = ""):
 	quick_print("")
 	quick_print(message)
 	quick_print("The number of items")
@@ -9,19 +10,30 @@ def itemLog(message):
 	quick_print("  - carrot :", num_items(Items.Carrot))
 	quick_print("  - pumpkin:", num_items(Items.Pumpkin))
 
+def wantPlant(message = ""):
+	quick_print(
+		"[Want plant]",
+		message,
+		"Hay:", autoPlant.getHayPlantFromTargetNum(config.PumpkinPlantSize),
+		"Wood:", autoPlant.getWoodPlantFromTargetNum(config.PumpkinPlantSize),
+		"Carrot:", autoPlant.getCarrotPlantFromTargetNum(config.PumpkinPlantSize), 
+		"Pumpkin:", autoPlant.getPumpkinPlantFromTargetNum(config.PumpkinPlantSize)
+	)
+
+def map(message = ""):
+	quick_print("")
+	quick_print(message)
+	for x in range(get_world_size()):
+		quick_print(config.map[x])
+
 def compLog():
 	quick_print("")
 	quick_print("## complete Log")
 	quick_print("Target Number")
-	quick_print("  - hay    :", autoPlant.hayTargetNumber)
-	quick_print("  - wood   :", autoPlant.woodTargetNumber)
-	quick_print("  - carrot :", autoPlant.carrotTargetNumber)
-	quick_print("  - pumpkin:", autoPlant.pumpkinTargetNumber)
-	quick_print("Needs Number")
-	quick_print("  - hay    :", autoPlant.hayNeedsNumber)
-	quick_print("  - wood   :", autoPlant.woodNeedsNumber)
-	quick_print("  - carrot :", autoPlant.carrotNeedsNumber)
-	quick_print("  - pumpkin:", autoPlant.pumpkinNeedsNumber)
+	quick_print("  - hay    :", config.TargetNumberHay)
+	quick_print("  - wood   :", config.TargetNumberWood)
+	quick_print("  - carrot :", config.TargetNumberCarrot)
+	quick_print("  - pumpkin:", config.TargetNumberPumpkin)
 	quick_print("Planted Number")
 	quick_print("  - grass :", autoPlant.grassPlantedNumber)
 	quick_print("  - bush  :", autoPlant.bushPlantedNumber)
@@ -33,12 +45,3 @@ def compLog():
 	quick_print("  - wood   :", autoPlant.woodHarvestNumber)
 	quick_print("  - carrot :", autoPlant.carrotHarvestNumber)
 	quick_print("  - pumpkin:", autoPlant.pumpkinHarvestNumber)
-	quick_print("----")
-	quick_print("Harvest Rate")
-	quick_print("  - hay    :", autoPlant.hayHarvestRate)
-	quick_print("  - wood   :", autoPlant.woodHarvestRate)
-	quick_print("  - carrot :", autoPlant.carrotHarvestRate)
-	quick_print("  - pumpkin:", autoPlant.pumpkinHarvestRate)
-	quick_print("Entity Level")
-	quick_print("  - carrot :", autoPlant.carrotLevel)
-	quick_print("  - pumpkin:", autoPlant.pumpkinLevel)
