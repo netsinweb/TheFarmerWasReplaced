@@ -82,16 +82,97 @@ def setEntityLevel(numList):
 		pumpkinLevel
 	) = numList
 
+
+def getExpectedPumpkinUnit(pumpkinPlantSize = 1):
+	if pumpkinPlantSize > 6:
+		return (pumpkinPlantSize ** 2) * 6 * pumpkinHarvestRate
+	return pumpkinPlantSize ** 3 * pumpkinHarvestRate
+
+# 目標値と所持数から必要な植栽数を算出
+
+def getPumpkinPlantFromTargetNum(pumpkinPlantSize = 1):
+	goal = pumpkinTargetNumber + getPumpkinNeeds() - num_items(Items.Pumpkin)
+	if goal <= 0:
+		return 0
+	unit = getExpectedPumpkinUnit(pumpkinPlantSize)
+	roundUp = 0
+	if goal % unit > 0:
+		roundUp = 1
+	return (goal // unit + roundUp) * (pumpkinPlantSize ** 2)
+
+def getCarrotPlantFromTargetNum(pumpkinPlantSize = 1):
+	goal = carrotTargetNumber + getCarrotNeeds(pumpkinPlantSize) - num_items(Items.Carrot)
+	if goal <= 0:
+		return 0
+	unit = carrotHarvestUnit * carrotHarvestRate
+	roundUp = 0
+	if goal % unit > 0:
+		roundUp = 1
+	return goal // unit + roundUp
+
+# 木材の植栽数だけリスト[Bush数, Tree数]で返すよ
+def getWoodPlantFromTargetNum(pumpkinPlantSize = 1):
+	def distributeUnit(num):
+		if num <= bushUnit:
+			return [1, 0]
+		if num <= treeUnit:
+			return [0, 1]
+	goal = woodTargetNumber + getWoodNeeds(pumpkinPlantSize) - num_items(Items.Wood)
+	if goal <= 0:
+		return [0, 0]
+	bushUnit = woodHarvestFromBushUnit * woodHarvestRate
+	treeUnit = woodHarvestFromTreeUnit * woodHarvestRate
+	unit = bushUnit + treeUnit
+	if goal <= treeUnit:
+		return distributeUnit(goal)
+	plantNum = goal // unit
+	distribution = distributeUnit(goal % unit)
+	return [plantNum + distribution[0], plantNum + distribution[1]]
+
+def getHayPlantFromTargetNum(pumpkinPlantSize = 1):
+	goal = hayTargetNumber + getHayNeeds(pumpkinPlantSize) - num_items(Items.Hay)
+	if goal <= 0:
+		return 0
+	unit = hayHarvestUnit + hayHarvestRate
+	roundUp = 0
+	if goal % unit > 0:
+		roundUp = 1
+	return goal // unit + roundUp
+
+# 必要な植栽数からコストを算出
+
+def getPumpkinNeeds():
+	return 0
+
+def getCarrotNeeds(pumpkinPlantSize = 1):
+	pumpkin = getPumpkinPlantFromTargetNum(pumpkinPlantSize) * pumpkinLevel
+	# ヒマワリの計算は未実装
+	sunflower = 0
+	return pumpkin + sunflower
+
+def getWoodNeeds(pumpkinPlantSize = 1):
+	carrot = getCarrotPlantFromTargetNum(pumpkinPlantSize) * carrotLevel
+	return carrot
+
+def getHayNeeds(pumpkinPlantSize = 1):
+	carrot = getCarrotPlantFromTargetNum(pumpkinPlantSize) * carrotLevel
+	return carrot
+
+
 # get_costが解放されればいらなくなるね
 # いや、やっぱり残りそうかな...
-def calcCost():
+def calcCost(pumpkinPlantSize = 1):
 	global carrotNeedsNumber
-	carrotNeedsNumber = (pumpkinTargetNumber - num_items(Items.Pumpkin)) / pumpkinHarvestRate * pumpkinLevel
+	carrotNeedsNumber = getCarrotNeeds(pumpkinPlantSize)
+	# carrotNeedsNumber = (getPumpkinPlantFromTargetNum(pumpkinPlantSize) - num_items(Items.Pumpkin)) / pumpkinHarvestRate * pumpkinLevel
 	global hayNeedsNumber
-	hayNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
+	hayNeedsNumber = getHayNeeds(pumpkinPlantSize)
+	# hayNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
 	global woodNeedsNumber
-	woodNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
+	woodNeedsNumber = getWoodNeeds(pumpkinPlantSize)
+	# woodNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
 
+# 設定値をconfig.pyに分離することでinitは不要になるかも
 def init(sizeList, targetNumList, harvestRateList, entityLevelList):
 	sizeX, sizeY = sizeList
 	global grassPlantedNumber
