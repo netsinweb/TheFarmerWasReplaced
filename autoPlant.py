@@ -8,25 +8,7 @@
 # ~~予想よりも多く収穫できる分には困らないからこのまま進めてみる。~~
 # ちゃんとログに書き出して確認したらランダムじゃないし、想定した計算であってる...落ち着け自分...
 
-hayTargetNumber = 0
-woodTargetNumber = 0
-carrotTargetNumber = 0
-pumpkinTargetNumber = 0
-
-hayHarvestRate = 1
-woodHarvestRate = 1
-carrotHarvestRate = 1
-pumpkinHarvestRate = 1
-
-carrotLevel = 1
-pumpkinLevel = 1
-
-# 収穫単位(土地1ブロックあたりの収穫数)
-hayHarvestUnit = 1
-woodHarvestFromBushUnit = 1
-woodHarvestFromTreeUnit = 5
-carrotHarvestUnit = 1
-pumpkinHarvestUnit = 1
+import config
 
 hayNeedsNumber = 0
 woodNeedsNumber = 0
@@ -50,48 +32,15 @@ woodComp = False
 carrotComp = False
 pumpkinComp = False
 
-def setTaregetNumber(numList):
-	global hayTargetNumber
-	global woodTargetNumber
-	global carrotTargetNumber
-	global pumpkinTargetNumber
-	(
-		hayTargetNumber,
-		woodTargetNumber,
-		carrotTargetNumber,
-		pumpkinTargetNumber
-	) = numList
-
-def setHarvestRate(numList):
-	global hayHarvestRate
-	global woodHarvestRate
-	global carrotHarvestRate
-	global pumpkinHarvestRate
-	(
-		hayHarvestRate,
-		woodHarvestRate,
-		carrotHarvestRate,
-		pumpkinHarvestRate
-	) = numList
-
-def setEntityLevel(numList):
-	global carrotLevel
-	global pumpkinLevel
-	(
-		carrotLevel,
-		pumpkinLevel
-	) = numList
-
-
 def getExpectedPumpkinUnit(pumpkinPlantSize = 1):
 	if pumpkinPlantSize > 6:
-		return (pumpkinPlantSize ** 2) * 6 * pumpkinHarvestRate
-	return pumpkinPlantSize ** 3 * pumpkinHarvestRate
+		return (pumpkinPlantSize ** 2) * 6 * config.HarvestRatePumpkin
+	return pumpkinPlantSize ** 3 * config.HarvestRatePumpkin
 
 # 目標値と所持数から必要な植栽数を算出
 
 def getPumpkinPlantFromTargetNum(pumpkinPlantSize = 1):
-	goal = pumpkinTargetNumber + getPumpkinNeeds() - num_items(Items.Pumpkin)
+	goal = config.TargetNumberPumpkin + getPumpkinNeeds() - num_items(Items.Pumpkin)
 	if goal <= 0:
 		return 0
 	unit = getExpectedPumpkinUnit(pumpkinPlantSize)
@@ -101,10 +50,10 @@ def getPumpkinPlantFromTargetNum(pumpkinPlantSize = 1):
 	return (goal // unit + roundUp) * (pumpkinPlantSize ** 2)
 
 def getCarrotPlantFromTargetNum(pumpkinPlantSize = 1):
-	goal = carrotTargetNumber + getCarrotNeeds(pumpkinPlantSize) - num_items(Items.Carrot)
+	goal = config.TargetNumberCarrot + getCarrotNeeds(pumpkinPlantSize) - num_items(Items.Carrot)
 	if goal <= 0:
 		return 0
-	unit = carrotHarvestUnit * carrotHarvestRate
+	unit = config.HarvestUnitCarrot * config.HarvestRateCarrot
 	roundUp = 0
 	if goal % unit > 0:
 		roundUp = 1
@@ -117,11 +66,11 @@ def getWoodPlantFromTargetNum(pumpkinPlantSize = 1):
 			return [1, 0]
 		if num <= treeUnit:
 			return [0, 1]
-	goal = woodTargetNumber + getWoodNeeds(pumpkinPlantSize) - num_items(Items.Wood)
+	goal = config.TargetNumberWood + getWoodNeeds(pumpkinPlantSize) - num_items(Items.Wood)
 	if goal <= 0:
 		return [0, 0]
-	bushUnit = woodHarvestFromBushUnit * woodHarvestRate
-	treeUnit = woodHarvestFromTreeUnit * woodHarvestRate
+	bushUnit = config.HarvestWoodFromBushUnit * config.HarvestRateWood
+	treeUnit = config.HarvestWoodFromTreeUnit * config.HarvestRateWood
 	unit = bushUnit + treeUnit
 	if goal <= treeUnit:
 		return distributeUnit(goal)
@@ -130,10 +79,10 @@ def getWoodPlantFromTargetNum(pumpkinPlantSize = 1):
 	return [plantNum + distribution[0], plantNum + distribution[1]]
 
 def getHayPlantFromTargetNum(pumpkinPlantSize = 1):
-	goal = hayTargetNumber + getHayNeeds(pumpkinPlantSize) - num_items(Items.Hay)
+	goal = config.TargetNumberHay + getHayNeeds(pumpkinPlantSize) - num_items(Items.Hay)
 	if goal <= 0:
 		return 0
-	unit = hayHarvestUnit + hayHarvestRate
+	unit = config.HarvestUnitHay + config.HarvestRateHay
 	roundUp = 0
 	if goal % unit > 0:
 		roundUp = 1
@@ -145,17 +94,17 @@ def getPumpkinNeeds():
 	return 0
 
 def getCarrotNeeds(pumpkinPlantSize = 1):
-	pumpkin = getPumpkinPlantFromTargetNum(pumpkinPlantSize) * pumpkinLevel
+	pumpkin = getPumpkinPlantFromTargetNum(pumpkinPlantSize) * config.EntityLevelPumpkin
 	# ヒマワリの計算は未実装
 	sunflower = 0
 	return pumpkin + sunflower
 
 def getWoodNeeds(pumpkinPlantSize = 1):
-	carrot = getCarrotPlantFromTargetNum(pumpkinPlantSize) * carrotLevel
+	carrot = getCarrotPlantFromTargetNum(pumpkinPlantSize) * config.EntityLevelCarrot
 	return carrot
 
 def getHayNeeds(pumpkinPlantSize = 1):
-	carrot = getCarrotPlantFromTargetNum(pumpkinPlantSize) * carrotLevel
+	carrot = getCarrotPlantFromTargetNum(pumpkinPlantSize) * config.EntityLevelCarrot
 	return carrot
 
 
@@ -164,38 +113,32 @@ def getHayNeeds(pumpkinPlantSize = 1):
 def calcCost(pumpkinPlantSize = 1):
 	global carrotNeedsNumber
 	carrotNeedsNumber = getCarrotNeeds(pumpkinPlantSize)
-	# carrotNeedsNumber = (getPumpkinPlantFromTargetNum(pumpkinPlantSize) - num_items(Items.Pumpkin)) / pumpkinHarvestRate * pumpkinLevel
 	global hayNeedsNumber
 	hayNeedsNumber = getHayNeeds(pumpkinPlantSize)
-	# hayNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
 	global woodNeedsNumber
 	woodNeedsNumber = getWoodNeeds(pumpkinPlantSize)
-	# woodNeedsNumber = (carrotTargetNumber + carrotNeedsNumber - num_items(Items.Carrot)) / carrotHarvestRate * carrotLevel
 
 # 設定値をconfig.pyに分離することでinitは不要になるかも
-def init(sizeList, targetNumList, harvestRateList, entityLevelList):
+def init(sizeList):
 	sizeX, sizeY = sizeList
 	global grassPlantedNumber
 	grassPlantedNumber = sizeX * sizeY
-	setTaregetNumber(targetNumList)
-	setHarvestRate(harvestRateList)
-	setEntityLevel(entityLevelList)
 	calcCost()
 
 def getHayHarvestBasic():
-	return hayHarvestUnit * hayHarvestRate
+	return config.HarvestUnitHay * config.HarvestRateHay
 
 def getWoodHarvestFromBushBasic():
-	return woodHarvestFromBushUnit * woodHarvestRate
+	return config.HarvestWoodFromBushUnit * config.HarvestRateWood
 
 def getWoodHarvestFromTreeBasic():
-	return woodHarvestFromTreeUnit * woodHarvestRate
+	return config.HarvestWoodFromTreeUnit * config.HarvestRateWood
 
 def getCarrotHarvestBasic():
-	return carrotHarvestUnit * carrotHarvestRate
+	return config.HarvestUnitCarrot * config.HarvestRateCarrot
 
 def getPumpkinHarvestBasic():
-	return pumpkinHarvestUnit * pumpkinHarvestRate
+	return config.HarvestUnitPumpkin * config.HarvestRatePumpkin
 
 def getHayExpectationNum():
 	return num_items(Items.Hay) + (grassPlantedNumber * getHayHarvestBasic())
@@ -210,16 +153,16 @@ def getPumpkinExpectationNum():
 	return num_items(Items.Pumpkin) + (pumpkinPlantedNumber * getPumpkinHarvestBasic())
 
 def isHayComp():
-	return num_items(Items.Hay) >= (hayTargetNumber + hayNeedsNumber) or hayComp
+	return num_items(Items.Hay) >= (config.TargetNumberHay + hayNeedsNumber) or hayComp
 
 def isWoodComp():
-	return num_items(Items.Wood) >= (woodTargetNumber + woodNeedsNumber) or woodComp
+	return num_items(Items.Wood) >= (config.TargetNumberWood + woodNeedsNumber) or woodComp
 
 def isCarrotComp():
-	return num_items(Items.Carrot) >= (carrotTargetNumber + carrotNeedsNumber) or carrotComp
+	return num_items(Items.Carrot) >= (config.TargetNumberCarrot + carrotNeedsNumber) or carrotComp
 
 def isPumpkinComp():
-	return num_items(Items.Pumpkin) >= (pumpkinTargetNumber + pumpkinNeedsNumber) or pumpkinComp
+	return num_items(Items.Pumpkin) >= (config.TargetNumberPumpkin + pumpkinNeedsNumber) or pumpkinComp
 
 def action(target=""):
 	def getTargetPlant(target=""):
@@ -234,31 +177,31 @@ def action(target=""):
 			quick_print("hayNeedsNumber:", hayNeedsNumber)
 			change_hat(Hats.Brown_Hat)
 			return "Hay"
-		if getWoodExpectationNum() < (woodTargetNumber + woodNeedsNumber) and not woodComp:
+		if getWoodExpectationNum() < (config.TargetNumberWood + woodNeedsNumber) and not woodComp:
 			quick_print("")
 			quick_print("getTargetPlant: Wood")
 			quick_print("items:",num_items(Items.Wood))
 			quick_print("bushPlantedNumber:", bushPlantedNumber)
 			quick_print("treePlantedNumber:", bushPlantedNumber)
-			quick_print("woodTargetNumber:", woodTargetNumber)
+			quick_print("woodTargetNumber:", config.TargetNumberWood)
 			quick_print("woodNeedsNumber:", woodNeedsNumber)
 			change_hat(Hats.Green_Hat)
 			return "Wood"
-		if getCarrotExpectationNum() < (carrotTargetNumber + carrotNeedsNumber) and not carrotComp:
+		if getCarrotExpectationNum() < (config.TargetNumberCarrot + carrotNeedsNumber) and not carrotComp:
 			quick_print("")
 			quick_print("getTargetPlant: Carrot")
 			quick_print("items:",num_items(Items.Carrot))
 			quick_print("carrotPlantedNumber:", carrotPlantedNumber)
-			quick_print("carrotTargetNumber:", carrotTargetNumber)
+			quick_print("carrotTargetNumber:", config.TargetNumberCarrot)
 			quick_print("carrotNeedsNumber:", carrotNeedsNumber)
 			change_hat(Hats.Carrot_Hat)
 			return "Carrot"
-		if getPumpkinExpectationNum() < (pumpkinTargetNumber + pumpkinNeedsNumber) and not pumpkinComp:
+		if getPumpkinExpectationNum() < (config.TargetNumberPumpkin + pumpkinNeedsNumber) and not pumpkinComp:
 			quick_print("")
 			quick_print("getTargetPlant: Pumpkin")
 			quick_print("items:",num_items(Items.Pumpkin))
 			quick_print("pumpkinPlantedNumber:", pumpkinPlantedNumber)
-			quick_print("pumpkinTargetNumber:", pumpkinTargetNumber)
+			quick_print("pumpkinTargetNumber:", config.TargetNumberPumpkin)
 			quick_print("pumpkinNeedsNumber:", pumpkinNeedsNumber)
 			change_hat(Hats.Brown_Hat)
 			return "Pumpkin"
