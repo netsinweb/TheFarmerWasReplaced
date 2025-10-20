@@ -1,7 +1,7 @@
 # カボチャの植栽、育成、収穫関連
 # 栽培サイズの指定
 
-
+import config
 import autoMove
 
 def isHarvest(growthNum, size):
@@ -14,6 +14,7 @@ def doPlant(size, point=[0, 0]):
 		if get_ground_type() != Grounds.Soil:
 			till()
 		plant(Entities.Pumpkin)
+		config.map[get_pos_x()][get_pos_y()] = get_entity_type()
 		autoMove.snakeMove([size, size], point)
 
 def checkHarvest(size, point=[0, 0]):
@@ -21,6 +22,7 @@ def checkHarvest(size, point=[0, 0]):
 		for i in range(size ** 2):
 			if not can_harvest():
 				plant(Entities.Pumpkin)
+				config.map[get_pos_x()][get_pos_y()] = get_entity_type()
 			else:
 				growthNum += 1
 			autoMove.snakeMove([size, size], point)
